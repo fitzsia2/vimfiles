@@ -16,8 +16,11 @@ if isdirectory($HOME . "/.vim/bundle/Vundle.vim")
   Plugin 'xolox/vim-easytags'
   Plugin 'bling/vim-airline'
   Plugin 'powerline/fonts'
-  Plugin 'nanotech/jellybeans.vim'
   Plugin 'airblade/vim-gitgutter'
+  Plugin 'tpope/vim-fugitive'
+  Plugin 'idbrii/vim-man'
+  Plugin 'nanotech/jellybeans.vim'
+  Plugin 'altercation/vim-colors-solarized'
 
   call vundle#end()
   filetype plugin indent on
@@ -42,14 +45,16 @@ set showcmd
 set showmode
 set incsearch
 set hls
-set foldmethod=indent
-set foldlevel=1
+set foldmethod=syntax
+set foldlevel=2
 set t_Co=256
 set ttimeoutlen=50
 set relativenumber
 
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
+
+filetype indent on
 
 "---------------------------------------
 " Custom settings
@@ -60,6 +65,15 @@ if _curfile =~ "Makefile" || _curfile =~ "makefile" || _curfile =~ ".*\.mk"
   set ts=4
   set sw=4
 endif
+
+"---------------------------------------
+" vim-man settings
+"---------------------------------------
+if isdirectory($HOME . "/.vim/bundle/vim-man")
+  nnoremap K :Man <cword>
+else
+  echo "no vim-man"
+end
 
 "---------------------------------------
 " Syntastic settings
@@ -92,13 +106,13 @@ if has("cscope")
   endfunction
   au BufEnter /* call LoadCscope()
 
-  nmap <C-@>s :scs find s <C-R>=expand("<cword>")<CR><CR> 
-  nmap <C-@>g :scs find g <C-R>=expand("<cword>")<CR><CR> 
-  nmap <C-@>c :scs find c <C-R>=expand("<cword>")<CR><CR> 
-  nmap <C-@>t :scs find t <C-R>=expand("<cword>")<CR><CR> 
-  nmap <C-@>e :scs find e <C-R>=expand("<cword>")<CR><CR> 
-  nmap <C-@>f :scs find f <C-R>=expand("<cfile>")<CR><CR> 
-  nmap <C-@>i :scs find i ^<C-R>=expand("<cfile>")<CR>$<CR> 
+  nmap <C-@>s :scs find s <C-R>=expand("<cword>")<CR><CR>
+  nmap <C-@>g :scs find g <C-R>=expand("<cword>")<CR><CR>
+  nmap <C-@>c :scs find c <C-R>=expand("<cword>")<CR><CR>
+  nmap <C-@>t :scs find t <C-R>=expand("<cword>")<CR><CR>
+  nmap <C-@>e :scs find e <C-R>=expand("<cword>")<CR><CR>
+  nmap <C-@>f :scs find f <C-R>=expand("<cfile>")<CR><CR>
+  nmap <C-@>i :scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
   nmap <C-@>d :scs find d <C-R>=expand("<cword>")<CR><CR>
 endif
 
@@ -115,25 +129,60 @@ endfunction
 "---------------------------------------
 if isdirectory($HOME . "/.vim/bundle/vim-airline")
   set laststatus=2
+  let g:airline#extensions#bufferline#enabled = 1
+  let g:airline#extensions#bufferline#overwrite_variables = 1
   if isdirectory($HOME . "/.vim/bundle/fonts")
     let g:airline_powerline_fonts = 1
   endif
-  "function! AirlineInit()
-    "let g:airline_section_a = airline#section#create(['mode',' ','branch'])
-    "let g:airline_section_b = airline#section#create_left(['ffenc','hunks','%f'])
-    "let g:airline_section_c = airline#section#create(['filetype'])
-    "let g:airline_section_x = airline#section#create(['%P'])
-    "let g:airline_section_y = airline#section#create(['%B'])
-    "let g:airline_section_z = airline#section#create_right(['%l','%c'])
-  "endfunction
-  "autocmd VimEnter * call AirlineInit()
+
+  if isdirectory($HOME . "/.vim/bundle/fugitive")
+    " enable/disable fugitive/lawrencium integration
+    let g:airline#extensions#branch#enabled = 1
+
+    " change the text for when no branch is detected
+    let g:airline#extensions#branch#empty_message = ''
+
+    " use vcscommand.vim if available
+    let g:airline#extensions#branch#use_vcscommand = 0
+
+    " truncate long branch names to a fixed length
+    let g:airline#extensions#branch#displayed_head_limit = 10
+
+    " customize formatting of branch name
+    " default value leaves the name unmodifed
+    let g:airline#extensions#branch#format = 0
+
+    " to only show the tail, e.g. a branch 'feature/foo' show 'foo'
+    let g:airline#extensions#branch#format = 1
+
+    " if a string is provided, it should be the name of a function that
+    " takes a string and returns the desired value
+    let g:airline#extensions#branch#format = 'CustomBranchName'
+    function! CustomBranchName(name)
+      return '[' . a:name . ']'
+    endfunction
+
+    leg g:airline#extensions#tabline#enabled = 1
+
+    " enable/disable syntastic integration >
+    let g:airline#extensions#syntastic#enabled = 0
+  endif
 endif
 
 "---------------------------------------
 " Airline settings
 "---------------------------------------
 if isdirectory($HOME . "/.vim/bundle/jellybeans.vim")
+  let g:jellybeans_background_color_256='NONE'
   colo jellybeans
+  set colorcolumn=80
+endif
+
+"---------------------------------------
+" minitest highlighting
+"---------------------------------------
+if isdirectory($HOME . "/.vim/autoload/after")
+  set completefunc=syntaxcomplete#Complete
 endif
 
 "---------------------------------------
