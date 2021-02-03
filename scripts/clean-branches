@@ -1,0 +1,9 @@
+#!/usr/bin/sh
+
+git remote prune origin
+
+BRANCHES="$(git branch --no-color --merged | egrep -v "(^\*|development|stage)")"
+for branch in $BRANCHES; do
+	git branch -d $branch
+done
+
