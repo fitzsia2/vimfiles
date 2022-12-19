@@ -1,2 +1,3 @@
 # vimfiles
-My fa
+My favorite vim settings
+
